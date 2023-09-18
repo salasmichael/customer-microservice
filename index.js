@@ -18,22 +18,7 @@ mssql.connect(dbConfig, (err) => {
   }
 });
 
-// Rutas de tu microservicio
-app.get('/clientes', (req, res) => {
-  // Implementa aquí la lógica para obtener clientes desde la base de datos y responder con ellos
-});
-
-app.post('/clientes', (req, res) => {
-  // Implementa aquí la lógica para crear un nuevo cliente en la base de datos
-});
-
-app.put('/clientes/:id', (req, res) => {
-  // Implementa aquí la lógica para actualizar un cliente en la base de datos
-});
-
-app.delete('/clientes/:id', (req, res) => {
-  // Implementa aquí la lógica para eliminar un cliente de la base de datos
-});
+app.use("/api", require("./src/routes/customer.route"));
 
 app.listen(port, () => {
   console.log(`Servidor en ejecución en el puerto ${port}`);
