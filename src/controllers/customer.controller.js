@@ -58,13 +58,14 @@ exports.save = async (req, res) => {
   exports.update = async (req, res) => {
    
     try {
-        const { customerID, identificationTypeID, identificationNumber,name,gender,imageURL } = req.body;
+        const { id } = req.params;
+        const { identificationTypeID, identificationNumber,name,gender,imageURL } = req.body;
         
         const pool = await mssql.connect(dbConfig);
         const request = pool.request();
 
         request.input('Operation', mssql.NVarChar(10), 'UPDATE');
-        request.input('CustomerID', mssql.Int, customerID);
+        request.input('CustomerID', mssql.Int, id);
         request.input('IdentificationTypeID', mssql.Int, identificationTypeID);
         request.input('IdentificationNumber', mssql.NVarChar(50), identificationNumber);
         request.input('Name', mssql.NVarChar(50), name);
@@ -72,11 +73,10 @@ exports.save = async (req, res) => {
         request.input('ImageURL', mssql.NVarChar(255), imageURL);
 
         await request.execute('sp_Customers_CRUD');
-        console.log('Cliente actualizado:', result.recordset[0]);
         
         res
         .status(200)
-        .send(successResponseFormat(result.recordset[0]));
+        .send(successResponseFormat('Cliente actualizado'));
         
     } catch (error) {
         console.error(error);
@@ -89,20 +89,19 @@ exports.save = async (req, res) => {
    
     try {
 
-        const { customerID } = req.body;
+        const { id } = req.params;
   
         const pool = await mssql.connect(dbConfig);
         const request = pool.request();
 
         request.input('Operation', mssql.NVarChar(10), 'DELETE');
-        request.input('CustomerID', mssql.Int, customerID);
+        request.input('CustomerID', mssql.Int, id);
 
         await request.execute('sp_Customers_CRUD');
-        console.log('Cliente eliminado:', result.recordset[0]);
         
         res
         .status(200)
-        .send(successResponseFormat(result.recordset[0]));
+        .send(successResponseFormat('Cliente eliminado'));
   
         
     } catch (error) {
