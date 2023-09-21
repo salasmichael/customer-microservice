@@ -16,7 +16,7 @@ exports.getAll = async(req, res) => {
 
         res
         .status(200)
-        .send(successResponseFormat(result.recordset[0]));
+        .send(successResponseFormat(result.recordset));
   
         
     } catch (error) {
@@ -34,9 +34,7 @@ exports.save = async (req, res) => {
       const pool = await mssql.connect(dbConfig);
       const request = pool.request();
   
-      // Definir los parámetros del procedimiento almacenado
-      const operation = 'INSERT';
-      request.input('Operation', mssql.NVarChar(10), operation);
+      request.input('Operation', mssql.NVarChar(10), 'INSERT');
       request.input('IdentificationTypeID', mssql.Int, identificationTypeID);
       request.input('IdentificationNumber', mssql.NVarChar(50), identificationNumber);
       request.input('Name', mssql.NVarChar(50), name);
