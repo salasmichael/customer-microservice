@@ -21,15 +21,59 @@ exports.getAll = async(req, res) => {
         
     } catch (error) {
         console.error(error);
-        res.status(500).send(errorResponseFormat('An error occurred'));
+        res.status(500).send(errorResponseFormat('Error al cargar los clientes'));
     }
+}
+
+exports.getOne = async(req, res) => {
+
+  try {
+      const { id } = req.params;
+      const pool = await mssql.connect(dbConfig);
+      const request = pool.request();
+  
+      request.input('Operation', mssql.NVarChar(10), 'SELECT');
+      request.input('CustomerID', mssql.Int, id);
+      const result = await request.execute('sp_Customers_CRUD');
+
+      res
+      .status(200)
+      .send(successResponseFormat(result.recordset));
+
+      
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(errorResponseFormat('Error al cargar el cliente'));
+  }
+}
+
+exports.search = async(req, res) => {
+
+  try {
+      const { query } = req.params;
+      const pool = await mssql.connect(dbConfig);
+      const request = pool.request();
+  
+      request.input('Operation', mssql.NVarChar(10), 'SEARCH');
+      request.input('Search', mssql.NVarChar(50), query);
+      const result = await request.execute('sp_Customers_CRUD');
+
+      res
+      .status(200)
+      .send(successResponseFormat(result.recordset));
+
+      
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(errorResponseFormat('Error al cargar el cliente'));
+  }
 }
 
 exports.save = async (req, res) => {
     
     try {
 
-      const { identificationTypeID, identificationNumber,name,gender,imageURL } = req.body;
+      const { identificationTypeID, identificationNumber,name,gender } = req.body;
   
       const pool = await mssql.connect(dbConfig);
       const request = pool.request();
@@ -39,17 +83,16 @@ exports.save = async (req, res) => {
       request.input('IdentificationNumber', mssql.NVarChar(50), identificationNumber);
       request.input('Name', mssql.NVarChar(50), name);
       request.input('Gender', mssql.NVarChar(10), gender);
-      request.input('ImageURL', mssql.NVarChar(255), imageURL);
   
       await request.execute('sp_Customers_CRUD');
       
       res
       .status(200)
-      .send(successResponseFormat('Cliente insertado'));
+      .send(successResponseFormat('Cliente creado con exito!'));
 
     } catch (error) {
       console.error(error);
-      res.status(500).send(errorResponseFormat('An error occurred'));
+      res.status(500).send(errorResponseFormat(error?.originalError?.info?.message));
     }
   };
 
@@ -57,7 +100,7 @@ exports.save = async (req, res) => {
    
     try {
         const { id } = req.params;
-        const { identificationTypeID, identificationNumber,name,gender,imageURL } = req.body;
+        const { identificationTypeID, identificationNumber,name,gender } = req.body;
         
         const pool = await mssql.connect(dbConfig);
         const request = pool.request();
@@ -68,17 +111,16 @@ exports.save = async (req, res) => {
         request.input('IdentificationNumber', mssql.NVarChar(50), identificationNumber);
         request.input('Name', mssql.NVarChar(50), name);
         request.input('Gender', mssql.NVarChar(10), gender);
-        request.input('ImageURL', mssql.NVarChar(255), imageURL);
 
         await request.execute('sp_Customers_CRUD');
         
         res
         .status(200)
-        .send(successResponseFormat('Cliente actualizado'));
+        .send(successResponseFormat('Cliente actualizado con exito!'));
         
     } catch (error) {
         console.error(error);
-        res.status(500).send(errorResponseFormat('An error occurred'));
+        res.status(500).send(errorResponseFormat('Error al actualizar el cliente'));
     }
 
   }
